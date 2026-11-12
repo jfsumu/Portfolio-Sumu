@@ -96,14 +96,12 @@ main {
 }
 
 .title {
-  font-size: 0.78rem;
+.title {
+  font-size: 0.82rem;
   color: var(--accent);
-  background: var(--accent-dim);
-  border: 1px solid rgba(200,240,74,0.25);
-  border-radius: 20px;
-  padding: 3px 12px;
-  display: inline-block;
   letter-spacing: 0.03em;
+  line-height: 1.5;
+}
 }
 
 .info-more-btn { display: none; }
