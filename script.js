@@ -31,3 +31,10 @@ function checkForm() {
 }
 
 [nameInput, emailInput, messageInput].forEach(el => el.addEventListener('input', checkForm));
+
+// Send button opens the visitor's mail client with the message pre-filled
+formBtn.addEventListener('click', () => {
+  const subject = encodeURIComponent(`Portfolio message from ${nameInput.value.trim()}`);
+  const body = encodeURIComponent(`${messageInput.value.trim()}\n\n— ${nameInput.value.trim()} (${emailInput.value.trim()})`);
+  window.location.href = `mailto:jferdoussumu@gmail.com?subject=${subject}&body=${body}`;
+});
