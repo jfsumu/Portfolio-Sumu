@@ -36,5 +36,5 @@ function checkForm() {
 formBtn.addEventListener('click', () => {
   const subject = encodeURIComponent(`Portfolio message from ${nameInput.value.trim()}`);
   const body = encodeURIComponent(`${messageInput.value.trim()}\n\n— ${nameInput.value.trim()} (${emailInput.value.trim()})`);
-  window.location.href = `mailto:jferdoussumu@gmail.com?subject=${subject}&body=${body}`;
+  window.location.href = `mailto:jfssumu@gmail.com?subject=${subject}&body=${body}`;
 });
