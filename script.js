@@ -27,7 +27,7 @@ const formBtn = document.getElementById('form-btn');
 
 function checkForm() {
   const filled = nameInput.value.trim() && emailInput.value.trim() && messageInput.value.trim();
-  formBtn.disabled = !filled;
+  formBtn.disabled = !(filled && emailInput.checkValidity());
 }
 
 [nameInput, emailInput, messageInput].forEach(el => el.addEventListener('input', checkForm));
