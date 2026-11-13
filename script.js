@@ -19,14 +19,35 @@ navLinks.forEach(link => {
   });
 });
 
-// Contact form
+// ---------- Email helpers ----------
+const MY_EMAIL = 'jfssumu@gmail.com';
+
+function gmailComposeUrl(subject = '', body = '') {
+  return 'https://mail.google.com/mail/?view=cm&fs=1'
+    + '&to=' + encodeURIComponent(MY_EMAIL)
+    + (subject ? '&su=' + encodeURIComponent(subject) : '')
+    + (body ? '&body=' + encodeURIComponent(body) : '');
+}
+
+// On desktop, open Gmail compose instead of the broken default mail app.
+// On phones, normal mailto: links keep working.
+if (window.matchMedia('(pointer: fine)').matches) {
+  document.querySelectorAll('a[href^="mailto:"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      window.open(gmailComposeUrl(), '_blank', 'noopener');
+    });
+  });
+}
+
+// ---------- Contact form ----------
 const nameInput = document.getElementById('name-input');
 const emailInput = document.getElementById('email-input');
 const messageInput = document.getElementById('message-input');
 const formBtn = document.getElementById('form-btn');
 const btnText = formBtn.querySelector('span');
 
-// Status message shown under the button (created here, no HTML change needed)
+// Status message under the button (created here, no HTML change needed)
 const statusMsg = document.createElement('p');
 statusMsg.style.marginTop = '12px';
 statusMsg.style.fontSize = '14px';
@@ -39,26 +60,29 @@ function checkForm() {
 
 [nameInput, emailInput, messageInput].forEach(el => el.addEventListener('input', checkForm));
 
-// Send the message through FormSubmit; it forwards it to your Gmail
 formBtn.addEventListener('click', async () => {
   const originalText = btnText.textContent;
+  const name = nameInput.value.trim();
+  const email = emailInput.value.trim();
+  const message = messageInput.value.trim();
+
   formBtn.disabled = true;
   btnText.textContent = 'Sending...';
   statusMsg.textContent = '';
 
   try {
-    const response = await fetch('https://formsubmit.co/ajax/jfssumu@gmail.com', {
+    const response = await fetch('https://formsubmit.co/ajax/' + MY_EMAIL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
       body: JSON.stringify({
-        name: nameInput.value.trim(),
-        email: emailInput.value.trim(),
-        message: messageInput.value.trim(),
-        _subject: `Portfolio message from ${nameInput.value.trim()}`,
-        _replyto: emailInput.value.trim(),
+        name,
+        email,
+        message,
+        _subject: `Portfolio message from ${name}`,
+        _replyto: email,
         _template: 'table',
         _captcha: 'false'
       })
@@ -72,19 +96,17 @@ formBtn.addEventListener('click', async () => {
       nameInput.value = '';
       emailInput.value = '';
       messageInput.value = '';
-      btnText.textContent = originalText;
-      checkForm();
     } else {
       throw new Error(data.message || 'Request failed');
     }
   } catch (err) {
-    // Fallback: open the visitor's mail app if the request fails
-    statusMsg.textContent = 'Could not send directly, opening your mail app instead...';
+    // Fallback: open Gmail compose with the message pre-filled
+    statusMsg.textContent = 'Could not send directly. Opening Gmail with your message instead...';
     statusMsg.style.color = '#f87171';
-    const subject = encodeURIComponent(`Portfolio message from ${nameInput.value.trim()}`);
-    const body = encodeURIComponent(`${messageInput.value.trim()}\n\n— ${nameInput.value.trim()} (${emailInput.value.trim()})`);
-    window.location.href = `mailto:jfssumu@gmail.com?subject=${subject}&body=${body}`;
-    btnText.textContent = originalText;
-    formBtn.disabled = false;
+    const body = `${message}\n\n— ${name} (${email})`;
+    window.open(gmailComposeUrl(`Portfolio message from ${name}`, body), '_blank', 'noopener');
   }
+
+  btnText.textContent = originalText;
+  checkForm();
 });
